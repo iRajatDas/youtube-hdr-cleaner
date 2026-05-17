@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>HDR Dimmer</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="hdr">
+    <div class="brand">
+      <div class="brand-icon">☀</div>
+      <span class="brand-name">HDR Dimmer</span>
+      <span class="brand-ver">v1.2</span>
+    </div>
+    <label class="sw" title="Enable / disable">
+      <input type="checkbox" id="powerToggle" checked />
+      <div class="sw-track"></div>
+    </label>
+  </header>
+
+  <!-- Status card -->
+  <div class="status" id="statusCard">
+    <div class="status-row">
+      <div class="dot" id="statusDot"></div>
+      <div class="status-body">
+        <div class="status-title" id="statusTitle">Checking…</div>
+        <div class="status-sub" id="statusSub"></div>
+      </div>
+      <div class="badge" id="hdrBadge" hidden>HLG</div>
+    </div>
+  </div>
+
+  <!-- Brightness -->
+  <div class="sec">
+    <div class="brow">
+      <div class="brow-left">Brightness</div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="auto-chip" id="autoChip" title="Use ITU-R BT.2100 derived value">
+          <span class="cdot"></span>
+          <span id="autoChipLabel">Auto</span>
+        </div>
+        <div class="bval" id="bval">72%</div>
+      </div>
+    </div>
+    <input type="range" id="slider" min="20" max="100" step="1" value="72" />
+    <div class="smarks">
+      <span>Dim</span>
+      <span>Full brightness</span>
+    </div>
+    <div class="formula" id="formulaRow" hidden></div>
+  </div>
+
+  <!-- Settings -->
+  <div class="sec">
+    <div class="sec-label">Settings</div>
+    <div class="setting-row">
+      <div class="setting-text">
+        <div class="setting-name">Apply to all videos</div>
+        <div class="setting-hint">Bypass HDR detection</div>
+      </div>
+      <label class="sw amber">
+        <input type="checkbox" id="forceToggle" />
+        <div class="sw-track"></div>
+      </label>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="sec">
+    <div class="sec-label">Your journey</div>
+
+    <div class="stats-grid">
+      <div class="stat">
+        <div class="stat-val" id="statVideos">—</div>
+        <div class="stat-lbl">Videos tamed</div>
+      </div>
+      <div class="stat">
+        <div class="stat-val" id="statTime">—</div>
+        <div class="stat-lbl">Dimming time</div>
+      </div>
+      <div class="stat">
+        <div class="stat-val" id="statToday">—</div>
+        <div class="stat-lbl">Today</div>
+      </div>
+    </div>
+
+    <div class="type-bar">
+      <div class="type-seg type-hlg" id="hlgBar" style="width:0%"></div>
+      <div class="type-seg type-pq"  id="pqBar"  style="width:0%"></div>
+    </div>
+    <div class="type-labels">
+      <span class="hlg-lbl" id="hlgLbl">HLG 0</span>
+      <span class="pq-lbl"  id="pqLbl">PQ 0</span>
+    </div>
+
+    <div class="comfort">
+      <div class="comfort-icon">👁</div>
+      <div class="comfort-body">
+        <div class="comfort-val" id="comfortVal">No data yet</div>
+        <div class="comfort-sub" id="comfortSub">Watch some HDR videos to see your stats</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+  <rect width="16" height="16" rx="4" fill="#1a1a1a"/>
+  <circle cx="8" cy="8" r="2.88" fill="none" stroke="#ff4444" stroke-width="0.9"/>
+  <line x1="11.5" y1="8.0" x2="12.8" y2="8.0" stroke="#ff4444" stroke-width="0.9" stroke-linecap="round"/>
+  <line x1="10.5" y1="10.5" x2="11.4" y2="11.4" stroke="#ff4444" stroke-width="0.9" stroke-linecap="round"/>
+  <line x1="8.0" y1="11.5" x2="8.0" y2="12.8" stroke="#ff4444" stroke-width="0.9" stroke-linecap="round"/>
+  <line x1="5.5" y1="10.5" x2="4.6" y2="11.4" stroke="#ff4444" stroke-width="0.9" stroke-linecap="round"/>
+  <line x1="4.5" y1="8.0" x2="3.2" y2="8.0" stroke="#ff4444" stroke-width="0.9" stroke-linecap="round"/>
+  <line x1="5.5" y1="5.5" x2="4.6" y2="4.6" stroke="#ff4444" stroke-width="0.9" stroke-linecap="round"/>
+  <line x1="8.0" y1="4.5" x2="8.0" y2="3.2" stroke="#ff4444" stroke-width="0.9" stroke-linecap="round"/>
+  <line x1="10.5" y1="5.5" x2="11.4" y2="4.6" stroke="#ff4444" stroke-width="0.9" stroke-linecap="round"/>
+  <line x1="2.88" y1="13.120000000000001" x2="13.120000000000001" y2="2.88" stroke="#ff4444" stroke-width="1.1" stroke-linecap="round"/>
+</svg>

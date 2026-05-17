@@ -1,0 +1,13 @@
+{
+  "name": "youtube-hdr-dimmer",
+  "version": "1.3.0",
+  "description": "Reduces YouTube HDR video brightness to match SDR viewing levels",
+  "scripts": {
+    "dev":   "node build.js --watch",
+    "build": "node build.js --prod",
+    "clean": "rm -rf dist"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.0"
+  }
+}
