@@ -9,6 +9,18 @@ it can't.
 Works with **HDR10**, **Dolby Vision** (PQ) and **HLG** (Broadcast HDR), in
 Chrome and Chromium-based browsers such as Brave and Edge.
 
+![YouTube HDR Cleaner popup: HDR blocked and HDR dimmed states](docs/images/popup.png)
+
+## Install
+
+1. Download `youtube-hdr-cleaner-<version>.zip` from the
+   [latest release](https://github.com/iRajatDas/youtube-hdr-cleaner/releases/latest).
+2. Unzip it.
+3. Open `chrome://extensions` (or `brave://extensions`, `edge://extensions`)
+   and turn on **Developer mode**.
+4. Click **Load unpacked** and select the unzipped folder.
+5. Reload any open YouTube tabs.
+
 ## Why YouTube HDR looks too bright
 
 On an HDR display, YouTube HDR videos are mastered for a much higher peak
@@ -36,6 +48,8 @@ no setting to turn HDR off.
 - Toolbar icon shows the state of each tab: on, HDR blocked, dimming, off
 - Private: no tracking, no network requests, stats stay in your browser
 
+![Toolbar icon states: on, HDR blocked, dimming, off](docs/images/toolbar-icons.png)
+
 ## FAQ
 
 **How do I turn off HDR on YouTube?**
@@ -53,7 +67,7 @@ which the extension detects and blocks. HLG (Broadcast HDR) is handled too.
 **Will it affect non-HDR videos?**
 No. Standard videos are left untouched unless you enable "Dim every video".
 
-## Install (development)
+## Build from source
 
 ```sh
 npm install
@@ -90,6 +104,7 @@ src/
 public/         copied into dist/ as-is — manifest and icons
 assets/         design sources (master icon SVG)
 scripts/        build and icon tooling
+docs/images/    README screenshots
 ```
 
 ### How the pieces talk
