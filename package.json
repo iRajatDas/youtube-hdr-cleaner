@@ -8,16 +8,20 @@
   "repository": "github:iRajatDas/youtube-hdr-cleaner",
   "scripts": {
     "dev": "node scripts/build.js --watch",
+    "dev:firefox": "node scripts/build.js --watch --target=firefox",
     "build": "node scripts/build.js --prod",
     "build:dev": "node scripts/build.js",
-    "package": "npm run build && cd dist && zip -qr ../youtube-hdr-cleaner-$npm_package_version.zip . && echo \"Packaged youtube-hdr-cleaner-$npm_package_version.zip\"",
+    "build:firefox": "node scripts/build.js --target=firefox",
+    "package": "npm run build && node scripts/package.js",
+    "lint:firefox": "web-ext lint --source-dir dist-firefox",
     "icons": "sh scripts/generate-icons.sh",
-    "clean": "rm -rf dist *.zip"
+    "clean": "rm -rf dist dist-firefox *.zip"
   },
   "engines": {
     "node": ">=18"
   },
   "devDependencies": {
-    "esbuild": "^0.25.0"
+    "esbuild": "^0.25.0",
+    "web-ext": "^10.8.0"
   }
 }
