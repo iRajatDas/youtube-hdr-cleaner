@@ -20,10 +20,10 @@ export function classifyTransfer(tc) {
 }
 
 // Events used between the MAIN-world detector (page.js) and content.js
-export const EVT_STATE   = 'hdr-dimmer:state';
-export const EVT_REQUEST = 'hdr-dimmer:request';
-export const EVT_BLOCK   = 'hdr-dimmer:block';  // detail '1' | '0' — blocking switched on/off
-export const EVT_RELOAD  = 'hdr-dimmer:reload'; // reload the current HDR video so it gets blocked
+export const EVT_STATE   = 'hdr-cleaner:state';
+export const EVT_REQUEST = 'hdr-cleaner:request';
+export const EVT_BLOCK   = 'hdr-cleaner:block';  // detail '1' | '0' — blocking switched on/off
+export const EVT_RELOAD  = 'hdr-cleaner:reload'; // reload the current HDR video so it gets blocked
 
 // localStorage flag ('0' = off) letting the MAIN-world blocker see settings.enabled
-export const BLOCK_KEY = 'hdr-dimmer:block';
+export const BLOCK_KEY = 'hdr-cleaner:block';

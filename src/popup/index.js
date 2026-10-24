@@ -156,7 +156,7 @@ function loadStatus() {
       const onYouTube = tab && /^https?:\/\/www\.youtube\.com\//.test(tab.url || '');
       setStatus('idle',
         onYouTube ? 'Reload this tab' : 'Open a YouTube video',
-        onYouTube ? 'It was opened before the extension loaded' : 'HDR Dimmer works on youtube.com');
+        onYouTube ? 'It was opened before the extension loaded' : 'YouTube HDR Cleaner works on youtube.com');
       hdrBadge.hidden = true;
       return;
     }

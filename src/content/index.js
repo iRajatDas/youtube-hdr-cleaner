@@ -1,7 +1,8 @@
 import { HDR_BRIGHTNESS, EVT_STATE, EVT_REQUEST, EVT_BLOCK, EVT_RELOAD, BLOCK_KEY } from '../shared/hdr.js';
 
+// Storage keys keep the extension's original name so existing settings survive
 const STORAGE_KEY     = 'hdrDimmerSettings';
-const FILTER_STYLE_ID = 'hdr-dimmer-style';
+const FILTER_STYLE_ID = 'hdr-cleaner-style';
 const OVERLAY_SELECTOR = '#movie_player::after,#shorts-player::after';
 
 let settings = { enabled: true, brightness: 75, autoBrightness: true, forceApply: false };

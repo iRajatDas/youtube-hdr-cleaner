@@ -1,8 +1,10 @@
 {
   "manifest_version": 3,
-  "name": "YouTube HDR Dimmer",
+  "name": "YouTube HDR Cleaner – Fix Too-Bright HDR Videos",
+  "short_name": "HDR Cleaner",
   "version": "1.3.0",
-  "description": "Reduces HDR video brightness on YouTube to match regular video levels for a more comfortable viewing experience.",
+  "description": "Stop YouTube HDR videos from being too bright. Blocks HDR10, Dolby Vision and HLG streams or dims them to normal SDR levels.",
+  "homepage_url": "https://github.com/iRajatDas/youtube-hdr-cleaner",
   "permissions": [
     "storage",
     "activeTab"
@@ -39,7 +41,8 @@
     "default_icon": {
       "16": "icons/icon16.png",
       "32": "icons/icon32.png"
-    }
+    },
+    "default_title": "YouTube HDR Cleaner"
   },
   "icons": {
     "16": "icons/icon16.png",

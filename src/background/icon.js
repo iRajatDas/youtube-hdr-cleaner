@@ -12,10 +12,10 @@ const MOON     = 'M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z';
 
 // state → glyph, glyph colour, optional status dot, tooltip
 export const ICON_STATES = {
-  on:      { glyph: 'sun',  color: AMBER,     title: 'HDR Dimmer — on' },
-  blocked: { glyph: 'sun',  color: AMBER,     dot: '#34d399', title: 'HDR Dimmer — HDR blocked, playing standard version' },
-  dimming: { glyph: 'moon', color: '#8b8cff', dot: '#8b8cff', title: 'HDR Dimmer — dimming this video' },
-  off:     { glyph: 'sun',  color: MUTED,     slash: true,    title: 'HDR Dimmer — off' },
+  on:      { glyph: 'sun',  color: AMBER,     title: 'YouTube HDR Cleaner — on' },
+  blocked: { glyph: 'sun',  color: AMBER,     dot: '#34d399', title: 'YouTube HDR Cleaner — HDR blocked, playing standard version' },
+  dimming: { glyph: 'moon', color: '#8b8cff', dot: '#8b8cff', title: 'YouTube HDR Cleaner — dimming this video' },
+  off:     { glyph: 'sun',  color: MUTED,     slash: true,    title: 'YouTube HDR Cleaner — off' },
 };
 
 function draw(size, { glyph, color, dot, slash }) {

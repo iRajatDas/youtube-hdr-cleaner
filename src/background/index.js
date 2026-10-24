@@ -1,6 +1,7 @@
 import { setIconState, stateFromStatus } from './icon.js';
 
 // ── Stats ─────────────────────────────────────────────────────────────────
+// Keeps the extension's original name so existing stats survive
 const STATS_KEY = 'hdrDimmerStats';
 const DEFAULT_STATS = {
   totalVideos:   0,
