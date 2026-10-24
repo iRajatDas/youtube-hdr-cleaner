@@ -46,6 +46,11 @@ jobs:
 
           **Firefox 128+:** download \`youtube-hdr-cleaner-$version-firefox.zip\`, open \`about:debugging#/runtime/this-firefox\`, click **Load Temporary Add-on** and pick the zip. Temporary add-ons are removed when Firefox restarts.
           NOTES
+          # A re-pushed tag only refreshes the zips, keeping any edited notes
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" youtube-hdr-cleaner-*.zip --clobber
+            exit 0
+          fi
           gh release create "$GITHUB_REF_NAME" youtube-hdr-cleaner-*.zip \
             --title "YouTube HDR Cleaner $GITHUB_REF_NAME" \
             --notes-file notes.md --generate-notes --verify-tag
