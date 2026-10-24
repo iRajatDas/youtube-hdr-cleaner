@@ -79,8 +79,9 @@ YouTube has no built-in switch. Install YouTube HDR Cleaner and HDR videos
 play in SDR automatically.
 
 **Does it reduce video quality?**
-Resolution and frame rate stay the same — only the HDR colour/brightness
-format is swapped for the SDR version of the same video.
+Frame rate stays the same, and most HDR videos have an SDR version at the
+same resolution (up to 4K). Videos uploaded in 8K HDR only offer SDR up to
+4K, so those play at 4K while HDR is blocked.
 
 **Does it work with Dolby Vision?**
 Yes. Dolby Vision and HDR10 on YouTube both use the PQ transfer function,
@@ -88,6 +89,29 @@ which the extension detects and blocks. HLG (Broadcast HDR) is handled too.
 
 **Will it affect non-HDR videos?**
 No. Standard videos are left untouched unless you enable "Dim every video".
+
+## Test videos
+
+Public YouTube videos for checking the extension by hand. Each was verified
+to carry the listed HDR format, and to play SDR with no HDR formats left once
+the extension blocks it.
+
+| Video | Format | Notes |
+| --- | --- | --- |
+| [4k hdr hlg test video](https://www.youtube.com/watch?v=4TMugQHkPx4) | HLG | 15 s — quickest HLG check |
+| [4K HDR (HLG) sample video, Sony α6600](https://www.youtube.com/watch?v=3ypGuk6JC6M) | HLG | 85 s |
+| [Tokyo light trails, 4K HDR HLG](https://www.youtube.com/watch?v=NSxxrhnhjf4) | HLG | Night scene, bright highlights |
+| [COSTA RICA IN 4K 60fps HDR](https://www.youtube.com/watch?v=LXb3EKWsInQ) | PQ (HDR10) | Good for search → click and on/off toggling |
+| [2020 LG OLED — The Black 4K HDR 60fps](https://www.youtube.com/watch?v=njX2bu-_Vw4) | PQ (HDR10) | 2 min |
+| [8K HDR Dolby Vision demo](https://www.youtube.com/watch?v=1SXu-X-C6JA) | PQ (Dolby Vision) | 8K HDR; SDR tops out at 4K |
+| [Two Hours of 4K Nature Scenes — BBC Earth](https://www.youtube.com/watch?v=SIm3nKfJnFE) | SDR | Control — should show "Standard video" |
+
+What to check on an HDR display:
+
+1. Open an HDR video directly — the popup says **HDR blocked** and the toolbar icon gets a green dot.
+2. Search for it and click the result — same result (in-app navigation).
+3. Turn the extension off mid-video — it reloads at the same spot in HDR; turn it back on and it returns to SDR.
+4. Open the SDR control — the popup says **Standard video** and nothing is dimmed.
 
 ## Build from source
 
