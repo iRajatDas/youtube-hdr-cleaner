@@ -1,23 +1,57 @@
-# YouTube HDR Dimmer
+# YouTube HDR Cleaner
 
-A Chrome extension that stops HDR videos on YouTube from blasting your eyes.
-On an HDR display, YouTube HDR videos play far brighter than everything
-around them. HDR Dimmer makes them match standard videos, in two layers:
+**Fix YouTube HDR videos that are too bright.** YouTube HDR Cleaner is a free,
+open-source Chrome extension that stops HDR videos on YouTube from blinding
+you on HDR displays (MacBook Pro XDR, HDR monitors, OLED laptops). It forces
+the standard (SDR) version of the video, or dims HDR to normal brightness when
+it can't.
 
-1. **Block** — strips HDR formats from YouTube's player data so the player
-   picks the standard (SDR) version of the video. Nothing to dim.
-2. **Dim** — if an HDR stream still plays (e.g. an HDR-only upload), a dark
-   overlay lowers it to standard-video brightness.
+Works with **HDR10**, **Dolby Vision** (PQ) and **HLG** (Broadcast HDR), in
+Chrome and Chromium-based browsers such as Brave and Edge.
+
+## Why YouTube HDR looks too bright
+
+On an HDR display, YouTube HDR videos are mastered for a much higher peak
+brightness than everything else on screen. Highlights and even mid-tones end
+up far brighter than standard videos, the YouTube interface and the rest of
+your desktop, which is uncomfortable — especially in a dark room. YouTube has
+no setting to turn HDR off.
+
+## How YouTube HDR Cleaner fixes it
+
+1. **Block HDR** — removes HDR formats from YouTube's player data before the
+   player sees them, so YouTube plays the SDR version of the video at normal
+   brightness. No quality setting to change, no extra decoding.
+2. **Dim HDR** — if an HDR stream still plays (for example an HDR-only
+   upload), a dark overlay lowers it to standard-video brightness, using a
+   level derived from the ITU-R BT.2100 reference white.
 
 ## Features
 
-- Blocks HDR10 / Dolby Vision (PQ) and Broadcast HDR (HLG) streams
-- Works on direct loads and in-app navigation (search, home, recommendations)
-- Auto brightness derived from ITU-R BT.2100 reference white, or set it manually
-- Toggle on/off mid-video — the video reloads at the same position with or without HDR
-- Optional "Dim every video" mode
+- Disable HDR on YouTube automatically: blocks HDR10, Dolby Vision and HLG streams
+- Works on direct links and in-app navigation (search, home, recommendations)
+- Auto brightness for HDR that can't be blocked, or set it manually
+- Turn it on or off mid-video — the video reloads at the same position with or without HDR
+- Optional "Dim every video" mode for bright SDR content too
 - Toolbar icon shows the state of each tab: on, HDR blocked, dimming, off
-- Local-only stats: HDR videos handled, time dimmed, HDR type split
+- Private: no tracking, no network requests, stats stay in your browser
+
+## FAQ
+
+**How do I turn off HDR on YouTube?**
+YouTube has no built-in switch. Install YouTube HDR Cleaner and HDR videos
+play in SDR automatically.
+
+**Does it reduce video quality?**
+Resolution and frame rate stay the same — only the HDR colour/brightness
+format is swapped for the SDR version of the same video.
+
+**Does it work with Dolby Vision?**
+Yes. Dolby Vision and HDR10 on YouTube both use the PQ transfer function,
+which the extension detects and blocks. HLG (Broadcast HDR) is handled too.
+
+**Will it affect non-HDR videos?**
+No. Standard videos are left untouched unless you enable "Dim every video".
 
 ## Install (development)
 
