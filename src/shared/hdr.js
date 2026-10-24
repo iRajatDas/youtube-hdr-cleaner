@@ -27,3 +27,8 @@ export const EVT_RELOAD  = 'hdr-cleaner:reload'; // reload the current HDR video
 
 // localStorage flag ('0' = off) letting the MAIN-world blocker see settings.enabled
 export const BLOCK_KEY = 'hdr-cleaner:block';
+
+// Channels whose HDR is kept: a localStorage mirror (JSON array of channel
+// IDs) the blocker reads at page start, and an event when the list changes
+export const ALLOW_KEY = 'hdr-cleaner:allow';
+export const EVT_ALLOW = 'hdr-cleaner:allow';

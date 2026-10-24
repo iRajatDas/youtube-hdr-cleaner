@@ -10,7 +10,7 @@ import { classifyTransfer, EVT_STATE, EVT_REQUEST, EVT_RELOAD } from '../shared/
 
 const PLAYER_EVENTS = ['onStateChange', 'onVideoDataChange', 'onPlaybackQualityChange'];
 const HDR_DISPLAY   = matchMedia('(dynamic-range: high)');
-const IDLE          = { videoId: null, isHDR: false, hdrType: null, blockedType: null };
+const IDLE          = { videoId: null, isHDR: false, hdrType: null, blockedType: null, channelId: null, channelName: null };
 
 const boundPlayers = new WeakSet();
 let lastSent  = '';
@@ -66,8 +66,8 @@ function detect(p) {
   if (!videoId) return null; // player is between videos — hold current state
 
   // getPlayerResponse() can briefly lag behind getVideoData() after a switch
-  const fmts = pr && pr.videoDetails && pr.videoDetails.videoId === videoId &&
-               pr.streamingData && pr.streamingData.adaptiveFormats || null;
+  const details = pr && pr.videoDetails && pr.videoDetails.videoId === videoId ? pr.videoDetails : null;
+  const fmts = details && pr.streamingData && pr.streamingData.adaptiveFormats || null;
   const hdrFmts  = fmts ? fmts.filter(isHdrFormat) : [];
   const features = Array.isArray(d.video_quality_features) ? d.video_quality_features : null;
 
@@ -91,7 +91,10 @@ function detect(p) {
   }
   // HDR was stripped by blocker.js and an SDR stream is playing instead
   const blockedType = isHDR ? null : blockedHdrType(videoId);
-  return { videoId, isHDR, hdrType, blockedType };
+  // Channel, for the "Keep HDR for this channel" allowlist
+  const channelId   = details && details.channelId || null;
+  const channelName = details && details.author || d.author || null;
+  return { videoId, isHDR, hdrType, blockedType, channelId, channelName };
 }
 
 function check() {

@@ -1,6 +1,9 @@
 import './popup.css';
 import { HDR_BRIGHTNESS } from '../shared/hdr.js';
 
+// Same key content.js uses — keeps the extension's original name
+const SETTINGS_KEY = 'hdrDimmerSettings';
+
 // ── DOM refs ──────────────────────────────────────────────────────────────
 const $ = id => document.getElementById(id);
 
@@ -17,6 +20,11 @@ const bval           = $('bval');
 const brightnessHint = $('brightnessHint');
 const brightnessSec  = $('brightnessSec');
 const forceToggle    = $('forceToggle');
+const channelRow     = $('channelRow');
+const channelHint    = $('channelHint');
+const channelToggle  = $('channelToggle');
+const keptList       = $('keptList');
+const keptItems      = $('keptItems');
 
 // stats
 const statVideos = $('statVideos');
@@ -30,18 +38,12 @@ const comfortVal = $('comfortVal');
 const comfortSub = $('comfortSub');
 
 // ── Icons (Lucide-style strokes) ──────────────────────────────────────────
-const ICONS = {
-  blocked: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/>',
-  dimming: '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"/>',
-  force:   '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"/>',
-  sdr:     '<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>',
-  off:     '<path d="M12 2v10"/><path d="M18.4 6.6a9 9 0 1 1-12.8 0"/>',
-  idle:    '<rect x="2" y="5" width="20" height="14" rx="3"/><path d="m10 9 5 3-5 3z"/>',
-};
+// Status icons are <symbol>s in popup.html (#i-<kind>)
+const ICON_KINDS = ['blocked', 'dimming', 'force', 'allowed', 'sdr', 'off', 'idle'];
 
 function setStatus(kind, title, sub) {
   statusCard.className = `status ${kind}`;
-  statusIcon.innerHTML = `<svg viewBox="0 0 24 24">${ICONS[kind] || ICONS.idle}</svg>`;
+  statusIcon.querySelector('use').setAttribute('href', `#i-${ICON_KINDS.includes(kind) ? kind : 'idle'}`);
   statusTitle.textContent = title;
   statusSub.textContent   = sub;
 }
@@ -89,14 +91,16 @@ const HDR_NAMES = {
   PQ:  { display: 'HDR10 / Dolby Vision', badge: 'HDR10', badgeCls: 'pq'  },
 };
 
-function applyState({ isHDR, hdrType, blockedType, recommendedBrightness, effectiveBrightness: eb, settings }) {
+function applyState({ isHDR, hdrType, blockedType, recommendedBrightness, effectiveBrightness: eb, settings,
+                      channelId, channelName, channelAllowed }) {
   const enabled = settings.enabled;
   const auto    = settings.autoBrightness ?? true;
   const force   = settings.forceApply ?? false;
   const blocked = !isHDR && !!blockedType;
   const info    = HDR_NAMES[isHDR ? hdrType : blockedType] || null;
   const pct     = eb ?? settings.brightness;
-  const dimming = enabled && (isHDR || force);
+  const kept    = enabled && isHDR && channelAllowed; // HDR left as YouTube serves it
+  const dimming = enabled && !kept && (isHDR || force);
 
   document.body.classList.toggle('ext-off', !enabled);
   powerToggle.checked = enabled;
@@ -105,6 +109,8 @@ function applyState({ isHDR, hdrType, blockedType, recommendedBrightness, effect
   // status card — short title, details in the subtitle
   if (!enabled) {
     setStatus('off', 'Paused', 'HDR videos play at full brightness');
+  } else if (isHDR && channelAllowed) {
+    setStatus('allowed', 'HDR kept', `${channelName || 'This channel'} is on your HDR list`);
   } else if (isHDR) {
     setStatus(force ? 'force' : 'dimming', 'Dimming HDR video',
       `${info ? info.display : 'HDR'} · ${pct}% brightness`);
@@ -115,6 +121,12 @@ function applyState({ isHDR, hdrType, blockedType, recommendedBrightness, effect
   } else {
     setStatus('sdr', 'Standard video', 'Nothing to adjust');
   }
+
+  // "Keep HDR for this channel" — offered on videos that have HDR
+  channelRow.hidden = !(enabled && channelId && (isHDR || blocked || channelAllowed));
+  channelToggle.checked = !!channelAllowed;
+  channelHint.textContent = channelName || 'Never blocked or dimmed';
+  renderKept(settings.allowedChannels);
 
   if (enabled && (isHDR || blocked) && info) {
     hdrBadge.textContent = info.badge;
@@ -134,12 +146,15 @@ function applyState({ isHDR, hdrType, blockedType, recommendedBrightness, effect
   brightnessSec.classList.toggle('pending', pending);
   if (pending) bval.textContent = '';
 
-  if (auto && recommendedBrightness) {
+  if (kept) {
+    brightnessHint.textContent = 'Not applied — this channel keeps HDR.';
+  } else if (auto && recommendedBrightness) {
     const calc = hdrType === 'HLG'
       ? `(100/203)^(1/2.2) = ${recommendedBrightness}%`
       : `(100/203)^(1/2.2) − 4 = ${recommendedBrightness}%`;
-    brightnessHint.innerHTML =
-      `Matched to standard-video white level.<small>ITU-R BT.2100 · ${calc}</small>`;
+    const detail = document.createElement('small');
+    detail.textContent = `ITU-R BT.2100 · ${calc}`;
+    brightnessHint.replaceChildren('Matched to standard-video white level.', detail);
   } else if (auto) {
     brightnessHint.textContent =
       `Picks ${HDR_BRIGHTNESS.HLG}% for Broadcast HDR and ${HDR_BRIGHTNESS.PQ}% for HDR10 when one plays.`;
@@ -148,6 +163,32 @@ function applyState({ isHDR, hdrType, blockedType, recommendedBrightness, effect
   } else {
     brightnessHint.textContent = '';
   }
+}
+
+// Channels whose HDR is kept, with a remove button each
+function renderKept(channels = []) {
+  keptList.hidden = !channels.length;
+  keptItems.replaceChildren(...channels.map(c => {
+    const li = document.createElement('li');
+    const name = document.createElement('span');
+    name.textContent = c.name || c.id;
+    const remove = document.createElement('button');
+    remove.textContent = '×';
+    remove.title = remove.ariaLabel = `Stop keeping HDR for ${c.name || c.id}`;
+    remove.addEventListener('click', () => removeKept(c.id));
+    li.append(name, remove);
+    return li;
+  }));
+}
+
+// Written straight to storage so it also works away from YouTube; open
+// YouTube tabs pick the change up through storage.onChanged
+function removeKept(id) {
+  chrome.storage.local.get(SETTINGS_KEY, res => {
+    const s = res[SETTINGS_KEY] || {};
+    s.allowedChannels = (s.allowedChannels || []).filter(c => c.id !== id);
+    chrome.storage.local.set({ [SETTINGS_KEY]: s }, () => { renderKept(s.allowedChannels); loadStatus(); });
+  });
 }
 
 function loadStatus() {
@@ -216,6 +257,10 @@ slider.addEventListener('input', () => {
   , 60);
 });
 
+channelToggle.addEventListener('change', () => {
+  sendToContent({ type: 'SET_CHANNEL_ALLOWED', value: channelToggle.checked }, loadStatus);
+});
+
 forceToggle.addEventListener('change', () => {
   sendToContent({ type: 'SET_FORCE_APPLY', value: forceToggle.checked }, loadStatus);
 });
@@ -226,6 +271,7 @@ chrome.runtime.onMessage.addListener(msg => {
 });
 
 // ── Init ─────────────────────────────────────────────────────────────────
+chrome.storage.local.get(SETTINGS_KEY, res => renderKept((res[SETTINGS_KEY] || {}).allowedChannels));
 document.querySelector('.brand-ver').textContent = `v${chrome.runtime.getManifest().version}`;
 setStatus('idle', 'Checking…', '');
 setTrack(+slider.value);

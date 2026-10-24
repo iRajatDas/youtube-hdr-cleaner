@@ -1,11 +1,12 @@
-import { HDR_BRIGHTNESS, EVT_STATE, EVT_REQUEST, EVT_BLOCK, EVT_RELOAD, BLOCK_KEY } from '../shared/hdr.js';
+import { HDR_BRIGHTNESS, EVT_STATE, EVT_REQUEST, EVT_BLOCK, EVT_RELOAD, BLOCK_KEY, ALLOW_KEY, EVT_ALLOW } from '../shared/hdr.js';
 
 // Storage keys keep the extension's original name so existing settings survive
 const STORAGE_KEY     = 'hdrDimmerSettings';
 const FILTER_STYLE_ID = 'hdr-cleaner-style';
 const OVERLAY_SELECTOR = '#movie_player::after,#shorts-player::after';
 
-let settings = { enabled: true, brightness: 75, autoBrightness: true, forceApply: false };
+// allowedChannels: [{ id, name }] — channels whose HDR is kept (not blocked or dimmed)
+let settings = { enabled: true, brightness: 75, autoBrightness: true, forceApply: false, allowedChannels: [] };
 let settingsLoaded = false;
 
 // Latest result pushed by page.js (MAIN world)
@@ -13,6 +14,8 @@ let videoId = null;
 let isHDR   = false;
 let hdrType = null;
 let blockedType = null; // HDR type blocker.js swapped for SDR on this video
+let channelId   = null;
+let channelName = null;
 let recommendedBrightness = null;
 
 let lastCss    = null;
@@ -85,11 +88,43 @@ function syncBlockFlag() {
   try { localStorage.setItem(BLOCK_KEY, flag); } catch (_) {}
   document.dispatchEvent(new CustomEvent(EVT_BLOCK, { detail: flag }));
   if (prev === null) return; // initial sync, not a toggle
-  if (flag === '1' ? isHDR : blockedType) document.dispatchEvent(new CustomEvent(EVT_RELOAD));
+  if (flag === '1' ? isHDR && !channelAllowed() : blockedType) reloadVideo();
+}
+
+function reloadVideo() {
+  document.dispatchEvent(new CustomEvent(EVT_RELOAD));
+}
+
+// ── Channel allowlist ──────────────────────────────────────────────────────
+function allowedIds() {
+  return (settings.allowedChannels || []).map(c => c.id);
+}
+
+function channelAllowed(id = channelId) {
+  return !!id && allowedIds().includes(id);
+}
+
+// Mirror the allowlist for blocker.js (same scheme as the on/off flag). When
+// the current channel's status changes, reload so the stream follows:
+// allowing restores HDR, removing it blocks HDR again.
+let allowJson = null;
+function syncAllowList() {
+  const json = JSON.stringify(allowedIds());
+  if (json === allowJson) return;
+  const wasAllowed = allowJson !== null && !!channelId && JSON.parse(allowJson).includes(channelId);
+  const initial = allowJson === null;
+  allowJson = json;
+  try { localStorage.setItem(ALLOW_KEY, json); } catch (_) {}
+  document.dispatchEvent(new CustomEvent(EVT_ALLOW, { detail: json }));
+
+  const nowAllowed = channelAllowed();
+  if (initial || !settings.enabled || nowAllowed === wasAllowed) return;
+  if (nowAllowed ? blockedType : isHDR) reloadVideo();
 }
 
 function saveSettings() {
   syncBlockFlag();
+  syncAllowList();
   if (!contextAlive || !isContextAlive()) return;
   try { chrome.storage.local.set({ [STORAGE_KEY]: settings }); } catch (_) {}
 }
@@ -103,7 +138,7 @@ function effectiveBrightness() {
 
 // ── Stats tracking ─────────────────────────────────────────────────────────
 // Counts time while an HDR video is actually being dimmed; restarts per video.
-function syncTracking(active = settings.enabled && isHDR) {
+function syncTracking(active = settings.enabled && isHDR && !channelAllowed()) {
   const next = active ? videoId : null;
   if (next === trackingVideoId) return;
 
@@ -136,7 +171,8 @@ function getOrCreateStyleTag() {
 
 function applyFilter() {
   if (!settingsLoaded) return;
-  const shouldDim = settings.enabled && (isHDR || settings.forceApply);
+  // An allowed channel is left exactly as YouTube serves it
+  const shouldDim = settings.enabled && !channelAllowed() && (isHDR || settings.forceApply);
 
   // Dim with a black layer over the video instead of `filter` on the <video>.
   // Black at alpha a composited over a pixel gives c·(1−a) — the same result
@@ -164,7 +200,8 @@ function applyFilter() {
 
 function currentStatus() {
   return { isHDR, hdrType, blockedType, recommendedBrightness,
-           effectiveBrightness: effectiveBrightness(), settings };
+           effectiveBrightness: effectiveBrightness(), settings,
+           channelId, channelName, channelAllowed: channelAllowed() };
 }
 
 function notifyStatus() {
@@ -183,6 +220,8 @@ document.addEventListener(EVT_STATE, e => {
   isHDR   = !!s.isHDR;
   hdrType = s.hdrType || null;
   blockedType = s.blockedType || null;
+  channelId   = s.channelId || null;
+  channelName = s.channelName || null;
   recommendedBrightness = hdrType ? HDR_BRIGHTNESS[hdrType] : null;
   applyFilter();
 });
@@ -209,6 +248,14 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
       saveSettings(); applyFilter();
       sendResponse({ ok: true, effectiveBrightness: effectiveBrightness() });
       break;
+    case 'SET_CHANNEL_ALLOWED': {
+      if (!channelId) { sendResponse({ ok: false }); break; }
+      const rest = (settings.allowedChannels || []).filter(c => c.id !== channelId);
+      settings.allowedChannels = msg.value ? [...rest, { id: channelId, name: channelName }] : rest;
+      saveSettings(); applyFilter();
+      sendResponse({ ok: true });
+      break;
+    }
     case 'SET_FORCE_APPLY':
       settings.forceApply = msg.value;
       saveSettings(); applyFilter();
@@ -223,6 +270,7 @@ chrome.storage.onChanged.addListener((changes, area) => {
   if (area !== 'local' || !changes[STORAGE_KEY] || !changes[STORAGE_KEY].newValue) return;
   settings = { ...settings, ...changes[STORAGE_KEY].newValue };
   syncBlockFlag();
+  syncAllowList();
   applyFilter();
 });
 
@@ -233,6 +281,7 @@ window.addEventListener('pagehide', () => syncTracking(false));
 loadSettings(() => {
   settingsLoaded = true;
   syncBlockFlag();
+  syncAllowList();
   applyFilter();
   // Ask page.js to re-send its current state in case we missed it
   document.dispatchEvent(new CustomEvent(EVT_REQUEST));

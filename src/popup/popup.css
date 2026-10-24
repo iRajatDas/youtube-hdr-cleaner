@@ -94,6 +94,7 @@ svg{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-lin
 .status.blocked{--c:var(--green);--c-bg:var(--green-bg);--c-ring:var(--green-ring)}
 .status.dimming{--c:var(--accent);--c-bg:var(--accent-bg);--c-ring:var(--accent-ring)}
 .status.force  {--c:var(--amber);--c-bg:var(--amber-bg);--c-ring:var(--amber-ring)}
+.status.allowed{--c:var(--amber);--c-bg:var(--amber-bg);--c-ring:var(--amber-ring)}
 
 .status-icon{
   width:34px;height:34px;border-radius:10px;flex-shrink:0;
@@ -183,9 +184,31 @@ input[type='range']:disabled::-webkit-slider-thumb{cursor:default;box-shadow:non
 
 /* ── Setting row ─────────────────────────────────────────────── */
 .setting-row{display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer}
+.setting-row + .setting-row{margin-top:12px}
+.setting-row[hidden]{display:none}
 .setting-text{flex:1}
 .setting-name{font-size:13px;font-weight:600}
 .setting-hint{font-size:11px;color:var(--t2)}
+
+/* channels whose HDR is kept */
+.kept{margin-top:12px}
+.kept[hidden]{display:none}
+.kept-label{font-size:11px;color:var(--t2);margin-bottom:6px}
+.kept ul{list-style:none;display:flex;flex-wrap:wrap;gap:6px}
+.kept li{
+  display:flex;align-items:center;gap:4px;
+  max-width:100%;padding:2px 4px 2px 9px;
+  font-size:11px;color:var(--t1);
+  background:var(--surface);border:1px solid var(--border2);border-radius:20px;
+}
+.kept li span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.kept button{
+  width:18px;height:18px;flex-shrink:0;border:0;border-radius:50%;
+  display:grid;place-items:center;
+  background:transparent;color:var(--t2);font:inherit;font-size:13px;line-height:1;cursor:pointer;
+}
+.kept button:hover{background:var(--border2);color:var(--t1)}
+.kept button:focus-visible{outline:2px solid var(--accent)}
 
 /* ── Stats ───────────────────────────────────────────────────── */
 .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:14px}

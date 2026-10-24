@@ -6,7 +6,7 @@
 //
 // Must run synchronously at document_start in the MAIN world, before YouTube
 // parses or assigns its player response.
-import { classifyTransfer, BLOCK_KEY, EVT_BLOCK } from '../shared/hdr.js';
+import { classifyTransfer, BLOCK_KEY, EVT_BLOCK, ALLOW_KEY, EVT_ALLOW } from '../shared/hdr.js';
 
 const TAG = '[HDR Blocker]';
 
@@ -48,6 +48,11 @@ function sanitizePlayerResponse(data) {
   if (data.playerResponse) sanitizePlayerResponse(data.playerResponse);
 
   const sd = data.streamingData;
+  const details = data.videoDetails || {};
+  if (allowedChannels.has(details.channelId)) {
+    blockedVideos.delete(details.videoId); // served with HDR now
+    return data;
+  }
   if (sd && typeof sd === 'object') {
     const adaptive = filterFormats(sd.adaptiveFormats);
     const muxed    = filterFormats(sd.formats);
@@ -55,8 +60,7 @@ function sanitizePlayerResponse(data) {
     sd.formats         = muxed.formats;
 
     const type    = adaptive.type || muxed.type;
-    const videoId = data.videoDetails && data.videoDetails.videoId;
-    if (type && videoId) blockedVideos.set(videoId, type);
+    if (type && details.videoId) blockedVideos.set(details.videoId, type);
   }
   return data;
 }
@@ -129,6 +133,15 @@ let enabled = (() => {
   try { return localStorage.getItem(BLOCK_KEY) !== '0'; } catch (_) { return true; }
 })();
 document.addEventListener(EVT_BLOCK, e => { enabled = e.detail === '1'; });
+
+// Channels the user keeps HDR for — their responses pass through untouched
+function readAllowed(json) {
+  try { return new Set(JSON.parse(json) || []); } catch (_) { return new Set(); }
+}
+let allowedChannels = (() => {
+  try { return readAllowed(localStorage.getItem(ALLOW_KEY)); } catch (_) { return new Set(); }
+})();
+document.addEventListener(EVT_ALLOW, e => { allowedChannels = readAllowed(e.detail); });
 
 hookJsonParse();
 hookResponseJson();

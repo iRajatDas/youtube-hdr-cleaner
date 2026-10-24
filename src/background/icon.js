@@ -14,6 +14,7 @@ const MOON     = 'M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z';
 export const ICON_STATES = {
   on:      { glyph: 'sun',  color: AMBER,     title: 'YouTube HDR Cleaner — on' },
   blocked: { glyph: 'sun',  color: AMBER,     dot: '#34d399', title: 'YouTube HDR Cleaner — HDR blocked, playing standard version' },
+  allowed: { glyph: 'sun',  color: AMBER,     dot: AMBER,     title: 'YouTube HDR Cleaner — HDR kept for this channel' },
   dimming: { glyph: 'moon', color: '#8b8cff', dot: '#8b8cff', title: 'YouTube HDR Cleaner — dimming this video' },
   off:     { glyph: 'sun',  color: MUTED,     slash: true,    title: 'YouTube HDR Cleaner — off' },
 };
@@ -64,13 +65,17 @@ function imageData(state) {
 // tabId omitted → the default for every tab without its own state
 export function setIconState(state, tabId) {
   const target = tabId == null ? {} : { tabId };
-  chrome.action.setIcon({ ...target, imageData: imageData(state) }).catch(() => {});
-  chrome.action.setTitle({ ...target, title: ICON_STATES[state].title }).catch(() => {});
+  // Callback form: works in Chrome and Firefox; reading lastError silences a
+  // closed tab's "No tab with id" error
+  const ignore = () => void chrome.runtime.lastError;
+  chrome.action.setIcon({ ...target, imageData: imageData(state) }, ignore);
+  chrome.action.setTitle({ ...target, title: ICON_STATES[state].title }, ignore);
 }
 
 // Maps a content-script status to an icon state
-export function stateFromStatus({ isHDR, blockedType, settings }) {
+export function stateFromStatus({ isHDR, blockedType, channelAllowed, settings }) {
   if (!settings || !settings.enabled)  return 'off';
+  if (channelAllowed)                  return isHDR ? 'allowed' : 'on';
   if (isHDR || settings.forceApply)    return 'dimming';
   if (blockedType)                     return 'blocked';
   return 'on';
