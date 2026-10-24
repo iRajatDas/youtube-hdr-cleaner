@@ -1,3 +1,5 @@
+import { setIconState, stateFromStatus } from './icon.js';
+
 // ── Stats ─────────────────────────────────────────────────────────────────
 const STATS_KEY = 'hdrDimmerStats';
 const DEFAULT_STATS = {
@@ -26,8 +28,39 @@ function todayKey() {
   return new Date().toISOString().slice(0, 10);
 }
 
+// ── Toolbar icon ──────────────────────────────────────────────────────────
+// The default icon follows the on/off setting; YouTube tabs override it with
+// their own state from STATUS_UPDATE (sent by content.js on every change).
+const SETTINGS_KEY = 'hdrDimmerSettings';
+let defaultState = 'on';
+
+function applyDefaultIcon(settings) {
+  defaultState = settings && settings.enabled === false ? 'off' : 'on';
+  setIconState(defaultState);
+}
+
+chrome.storage.local.get(SETTINGS_KEY, res => applyDefaultIcon(res[SETTINGS_KEY]));
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (area === 'local' && changes[SETTINGS_KEY]) applyDefaultIcon(changes[SETTINGS_KEY].newValue);
+});
+
+// Leaving YouTube drops the tab's state. In-app YouTube navigations keep it
+// (content.js reports changes itself); info.url is only visible to us on
+// YouTube, so an unknown url means another site or a full reload, after
+// which content.js re-reports anyway.
+chrome.tabs.onUpdated.addListener((tabId, info) => {
+  if (info.status === 'loading' && !/^https?:\/\/www\.youtube\.com\//.test(info.url || ''))
+    setIconState(defaultState, tabId);
+});
+
 // ── Message handler ───────────────────────────────────────────────────────
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+
+  // ── Toolbar icon: per-tab state from content.js ─────────────────────
+  if (msg.type === 'STATUS_UPDATE') {
+    if (sender.tab) setIconState(stateFromStatus(msg), sender.tab.id);
+    return false;
+  }
 
   // ── Stats: record a new HDR video view ──────────────────────────────
   if (msg.type === 'TRACK_HDR_VIEW') {
