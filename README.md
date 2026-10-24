@@ -29,19 +29,28 @@
 YouTube HDR Cleaner is a free, open-source Chrome extension that stops HDR videos on YouTube from blinding you on HDR displays (MacBook Pro XDR, HDR monitors, OLED laptops). It forces the standard (SDR) version of the video, or dims HDR to normal brightness when it can't.
 
 Works with **HDR10**, **Dolby Vision** (PQ) and **HLG** (Broadcast HDR), in
-Chrome and Chromium-based browsers such as Brave and Edge.
+Chrome and Chromium-based browsers such as Brave and Edge, and in Firefox 128+.
 
 ![YouTube HDR Cleaner popup: HDR blocked and HDR dimmed states](docs/images/popup.png)
 
 ## Install
 
-1. Download `youtube-hdr-cleaner-<version>.zip` from the
-   [latest release](https://github.com/iRajatDas/youtube-hdr-cleaner/releases/latest).
-2. Unzip it.
-3. Open `chrome://extensions` (or `brave://extensions`, `edge://extensions`)
+Download from the [latest release](https://github.com/iRajatDas/youtube-hdr-cleaner/releases/latest).
+
+**Chrome, Brave, Edge**
+
+1. Download `youtube-hdr-cleaner-<version>-chrome.zip` and unzip it.
+2. Open `chrome://extensions` (or `brave://extensions`, `edge://extensions`)
    and turn on **Developer mode**.
-4. Click **Load unpacked** and select the unzipped folder.
-5. Reload any open YouTube tabs.
+3. Click **Load unpacked** and select the unzipped folder.
+4. Reload any open YouTube tabs.
+
+**Firefox 128+**
+
+1. Download `youtube-hdr-cleaner-<version>-firefox.zip`.
+2. Open `about:debugging#/runtime/this-firefox` and click **Load Temporary Add-on**.
+3. Select the zip. Firefox removes temporary add-ons when it restarts, until
+   the extension is published on addons.mozilla.org.
 
 ## Why YouTube HDR looks too bright
 
@@ -66,8 +75,10 @@ no setting to turn HDR off.
 - Works on direct links and in-app navigation (search, home, recommendations)
 - Auto brightness for HDR that can't be blocked, or set it manually
 - Turn it on or off mid-video — the video reloads at the same position with or without HDR
+- **Keep HDR for a channel** — whitelist creators whose HDR you want to see; manage the list from the popup
+- Keyboard shortcut: **Alt+Shift+H** (Option+Shift+H on Mac) turns it on or off — change it at `chrome://extensions/shortcuts`
 - Optional "Dim every video" mode for bright SDR content too
-- Toolbar icon shows the state of each tab: on, HDR blocked, dimming, off
+- Toolbar icon shows the state of each tab: on, HDR blocked, dimming, HDR kept, off
 - Private: no tracking, no network requests, stats stay in your browser
 
 ![Toolbar icon states: on, HDR blocked, dimming, off](docs/images/toolbar-icons.png)
@@ -86,6 +97,11 @@ same resolution (up to 4K). Videos uploaded in 8K HDR only offer SDR up to
 **Does it work with Dolby Vision?**
 Yes. Dolby Vision and HDR10 on YouTube both use the PQ transfer function,
 which the extension detects and blocks. HLG (Broadcast HDR) is handled too.
+
+**Can I keep HDR for some creators?**
+Yes. On one of their HDR videos, open the popup and turn on **Keep HDR for
+this channel**. Their videos then play exactly as YouTube serves them. Remove
+a channel with the × next to its name in the popup.
 
 **Will it affect non-HDR videos?**
 No. Standard videos are left untouched unless you enable "Dim every video".
@@ -126,23 +142,45 @@ reload button on the extension card and reload your YouTube tabs.
 
 ## Scripts
 
-| Command             | What it does                                              |
-| ------------------- | --------------------------------------------------------- |
-| `npm run dev`       | Development build into `dist/`, rebuilt on every change   |
-| `npm run build:dev` | One-off development build with source maps                |
-| `npm run build`     | Minified production build into `dist/`                    |
-| `npm run package`   | Production build zipped for the Chrome Web Store          |
-| `npm run icons`     | Re-render `public/icons/*.png` from `assets/icon.svg`     |
-| `npm run clean`     | Remove `dist/` and packaged zips                          |
+| Command                 | What it does                                                   |
+| ----------------------- | -------------------------------------------------------------- |
+| `npm run dev`           | Chrome development build into `dist/`, rebuilt on every change |
+| `npm run dev:firefox`   | Same for Firefox, into `dist-firefox/`                         |
+| `npm run build:dev`     | One-off Chrome development build with source maps              |
+| `npm run build:firefox` | One-off Firefox development build                              |
+| `npm run build`         | Minified production builds for Chrome and Firefox              |
+| `npm run package`       | Production builds zipped: `-chrome.zip` and `-firefox.zip`     |
+| `npm run lint:firefox`  | Validate the Firefox build with Mozilla's `web-ext lint`       |
+| `npm run icons`         | Re-render `public/icons/*.png` from `assets/icon.svg`          |
+| `npm run clean`         | Remove build folders and packaged zips                         |
 
-The version lives in `package.json` only; the build writes it into
-`dist/manifest.json`.
+The version lives in `package.json` only (the source manifest has none); the
+build writes it into each built manifest. `public/manifest.json` is the Chrome manifest — the build adds the
+Firefox-specific keys (background script, add-on ID, minimum version).
+
+To test in Firefox: `npm run build:firefox`, then load
+`dist-firefox/manifest.json` from `about:debugging#/runtime/this-firefox`.
+
+## Releasing
+
+Releases are built and published by GitHub Actions
+([`.github/workflows/release.yml`](.github/workflows/release.yml)):
+
+```sh
+npm version minor        # or patch / major — bumps package.json and tags vX.Y.Z
+git push --follow-tags   # the tag triggers the release workflow
+```
+
+The workflow checks the tag matches `package.json`, builds and lints both
+browsers, and publishes a GitHub release with the Chrome and Firefox zips
+attached. Every push and pull request also runs a build and the Firefox lint
+([`ci.yml`](.github/workflows/ci.yml)).
 
 ## Project structure
 
 ```
 src/
-  background/   service worker — stats storage, per-tab toolbar icon
+  background/   service worker — stats storage, per-tab toolbar icon, keyboard shortcut
   content/      isolated-world content script — settings, dim overlay, popup messaging
   page/         MAIN-world script — HDR blocker hooks and player state detection
   popup/        toolbar popup (HTML, CSS, JS)

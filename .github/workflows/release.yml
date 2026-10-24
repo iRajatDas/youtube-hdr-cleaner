@@ -1,0 +1,51 @@
+name: Release
+
+# Push a version tag to publish a release:
+#   npm version minor   (bumps package.json and creates the v* tag)
+#   git push --follow-tags
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+
+      - name: Check tag matches package.json
+        run: |
+          version="$(node -p "require('./package.json').version")"
+          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match package.json version $version"
+            exit 1
+          fi
+
+      - name: Build and package
+        run: npm run package
+
+      - name: Lint Firefox build
+        run: npm run lint:firefox
+
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          cat > notes.md <<NOTES
+          ### Install
+          **Chrome, Brave, Edge:** download \`youtube-hdr-cleaner-$version-chrome.zip\`, unzip it, open \`chrome://extensions\`, turn on **Developer mode**, click **Load unpacked** and pick the unzipped folder.
+
+          **Firefox 128+:** download \`youtube-hdr-cleaner-$version-firefox.zip\`, open \`about:debugging#/runtime/this-firefox\`, click **Load Temporary Add-on** and pick the zip. Temporary add-ons are removed when Firefox restarts.
+          NOTES
+          gh release create "$GITHUB_REF_NAME" youtube-hdr-cleaner-*.zip \
+            --title "YouTube HDR Cleaner $GITHUB_REF_NAME" \
+            --notes-file notes.md --generate-notes --verify-tag
