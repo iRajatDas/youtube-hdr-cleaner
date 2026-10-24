@@ -1,5 +1,5 @@
 import './popup.css';
-import { HDR_BRIGHTNESS } from './hdr.js';
+import { HDR_BRIGHTNESS } from '../shared/hdr.js';
 
 // ── DOM refs ──────────────────────────────────────────────────────────────
 const $ = id => document.getElementById(id);

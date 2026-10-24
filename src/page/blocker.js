@@ -6,7 +6,7 @@
 //
 // Must run synchronously at document_start in the MAIN world, before YouTube
 // parses or assigns its player response.
-import { classifyTransfer, BLOCK_KEY, EVT_BLOCK } from './hdr.js';
+import { classifyTransfer, BLOCK_KEY, EVT_BLOCK } from '../shared/hdr.js';
 
 const TAG = '[HDR Blocker]';
 

@@ -1,11 +1,5 @@
 node_modules/
 dist/
-
-# Built output files (generated from src/ — do not edit directly)
-/background.js
-/content.js
-/page.js
-/popup.js
-/popup.css
+*.zip
 *.map
 .DS_Store

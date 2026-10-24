@@ -6,7 +6,7 @@
 // prevents the bright flash on route changes and tab refocus.
 // Imported first: must install its hooks before YouTube loads the player
 import { blockedHdrType } from './blocker.js';
-import { classifyTransfer, EVT_STATE, EVT_REQUEST, EVT_RELOAD } from './hdr.js';
+import { classifyTransfer, EVT_STATE, EVT_REQUEST, EVT_RELOAD } from '../shared/hdr.js';
 
 const PLAYER_EVENTS = ['onStateChange', 'onVideoDataChange', 'onPlaybackQualityChange'];
 const HDR_DISPLAY   = matchMedia('(dynamic-range: high)');

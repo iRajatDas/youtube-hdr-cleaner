@@ -1,4 +1,4 @@
-import { HDR_BRIGHTNESS, EVT_STATE, EVT_REQUEST, EVT_BLOCK, EVT_RELOAD, BLOCK_KEY } from './hdr.js';
+import { HDR_BRIGHTNESS, EVT_STATE, EVT_REQUEST, EVT_BLOCK, EVT_RELOAD, BLOCK_KEY } from '../shared/hdr.js';
 
 const STORAGE_KEY     = 'hdrDimmerSettings';
 const FILTER_STYLE_ID = 'hdr-dimmer-style';
