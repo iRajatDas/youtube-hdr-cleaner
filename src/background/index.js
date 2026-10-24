@@ -54,6 +54,17 @@ chrome.tabs.onUpdated.addListener((tabId, info) => {
     setIconState(defaultState, tabId);
 });
 
+// ── Keyboard shortcut ─────────────────────────────────────────────────────
+// Flips `enabled` in storage; YouTube tabs follow through storage.onChanged
+// (and reload the current video so blocking or HDR takes effect).
+chrome.commands.onCommand.addListener(command => {
+  if (command !== 'toggle-enabled') return;
+  chrome.storage.local.get(SETTINGS_KEY, res => {
+    const settings = res[SETTINGS_KEY] || {};
+    chrome.storage.local.set({ [SETTINGS_KEY]: { ...settings, enabled: settings.enabled === false } });
+  });
+});
+
 // ── Message handler ───────────────────────────────────────────────────────
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
