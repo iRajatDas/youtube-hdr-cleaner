@@ -2,6 +2,8 @@
   "name": "youtube-hdr-cleaner",
   "version": "1.0.0",
   "private": true,
+  "license": "MIT",
+  "author": "Rajat Das",
   "description": "YouTube HDR Cleaner: Chrome extension that fixes too-bright YouTube HDR videos by blocking HDR10, Dolby Vision and HLG streams or dimming them to SDR brightness",
   "repository": "github:iRajatDas/youtube-hdr-cleaner",
   "scripts": {

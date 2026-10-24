@@ -13,6 +13,7 @@
   <a href="https://github.com/iRajatDas/youtube-hdr-cleaner/releases/latest"><img src="https://img.shields.io/github/v/release/iRajatDas/youtube-hdr-cleaner?style=flat-square&color=fbbf24&label=release" alt="Latest release"></a>
   <a href="https://github.com/iRajatDas/youtube-hdr-cleaner/commits/main"><img src="https://img.shields.io/github/last-commit/iRajatDas/youtube-hdr-cleaner?style=flat-square&color=8b8cff" alt="Last commit"></a>
   <a href="https://github.com/iRajatDas/youtube-hdr-cleaner/stargazers"><img src="https://img.shields.io/github/stars/iRajatDas/youtube-hdr-cleaner?style=flat-square&color=f2f2f4" alt="GitHub stars"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/iRajatDas/youtube-hdr-cleaner?style=flat-square&color=a0a0a8" alt="MIT license"></a>
   <br>
   <img src="https://img.shields.io/badge/Manifest-V3-4285F4?style=flat-square&logo=googlechrome&logoColor=white" alt="Manifest V3">
   <img src="https://img.shields.io/badge/Chrome-supported-4285F4?style=flat-square&logo=googlechrome&logoColor=white" alt="Chrome supported">
@@ -25,7 +26,7 @@
   <a href="https://github.com/iRajatDas/youtube-hdr-cleaner/releases/latest"><img src="https://img.shields.io/github/v/release/iRajatDas/youtube-hdr-cleaner?style=for-the-badge&label=Download&color=fbbf24&logo=github&logoColor=black&labelColor=1c1c20" alt="Download the latest release"></a>
 </p>
 
-YouTube HDR Cleaner is a free Chrome extension that stops HDR videos on YouTube from blinding you on HDR displays (MacBook Pro XDR, HDR monitors, OLED laptops). It forces the standard (SDR) version of the video, or dims HDR to normal brightness when it can't.
+YouTube HDR Cleaner is a free, open-source Chrome extension that stops HDR videos on YouTube from blinding you on HDR displays (MacBook Pro XDR, HDR monitors, OLED laptops). It forces the standard (SDR) version of the video, or dims HDR to normal brightness when it can't.
 
 Works with **HDR10**, **Dolby Vision** (PQ) and **HLG** (Broadcast HDR), in
 Chrome and Chromium-based browsers such as Brave and Edge.
@@ -151,3 +152,7 @@ page (MAIN world)  ──CustomEvent──▶  content (isolated)  ──runtime
 
 No data leaves your browser. Settings and stats are stored with
 `chrome.storage.local`; the extension only runs on `www.youtube.com`.
+
+## License
+
+[MIT](LICENSE) © 2026 Rajat Das
