@@ -155,4 +155,4 @@ No data leaves your browser. Settings and stats are stored with
 
 ## License
 
-[MIT](LICENSE) © 2026 Rajat Das
+[MIT](LICENSE) © 2026 Rajot Das
